@@ -5,7 +5,7 @@ public class SplayTreeStarter {
     static class SplayTree {
 
         public Node root;
-        public Node[] contents;
+        public Node[] nodes;
 
         class Node {
             public Node parent, left, right;
@@ -217,11 +217,12 @@ public class SplayTreeStarter {
          *   1
          */
         public SplayTree (int n) {
+            nodes = new Node[n];
             Node prev = null;
             for (int i = 0; i < n; i++) {
-                Node next = new Node(i);
-                setLeft(next, prev);
-                prev = next;
+                nodes[i] = new Node(i);
+                setLeft(nodes[i], prev);
+                prev = nodes[i];
             }
             root = prev;
         }
