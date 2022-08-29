@@ -259,7 +259,13 @@ struct tree* initialize_tree(unsigned int n) {
 
 // Frees the tree structure.
 void free_tree(struct tree *T) {
-  free(T->root - T->root->value + 1);
+  /* The start of the allocated block (x*) is at the node with value 1. We're trying
+   * to free(x*).
+   *
+   * If the current root (y*) is the kth node, then that would be x* + (k - 1).
+   * Thus, x* = y* - (k - 1).
+   */
+  free(T->root - (T->root->value - 1));
   free(T);
 }
 
