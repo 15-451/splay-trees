@@ -13,61 +13,65 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
 // Struct definitions
 struct node {
-  struct node* parent;
-  struct node* left;
-  struct node* right;
+  struct node *parent;
+  struct node *left;
+  struct node *right;
 
   int value;
 };
 
 struct tree {
   int size;
-  struct node* root;
+  struct node *root;
 };
 
 // Tree setting functions
 /**
- * Sets P's left child to L and updates L's parent to be P if L isn't NULL.
+ * Sets parent's left child to left and updates left's parent to be parent if
+ * left isn't NULL.
  * 
- * @requires P cannot be NULL
+ * @requires parent cannot be NULL
  */
 void set_left(struct node *parent, struct node *left) {
-  if (parent == NULL) printf("missing node\n");
+  assert(parent != NULL);
   parent->left = left;
   if (left != NULL) left->parent = parent;
 }
 
 /**
- * Sets P's left child to R and updates R's parent to be P if R isn't null.
+ * Sets parent's right child to right and updates right's parent to be parent if
+ * right isn't NULL.
  * 
- * @requires P cannot be NULL
+ * @requires parent cannot be NULL
  */
 void set_right(struct node *parent, struct node *right) {
-  if (parent == NULL) printf("missing node\n");
+  assert(parent != NULL);
   parent->right = right;
   if (right != NULL) right->parent = parent;
 }
 
 /**
- * Changes P's child to be new instead of old. If P is NULL, this instead
- * assumes old is the root and swaps it out accordingly.
+ * Changes parent's child to be new instead of old. If parent is NULL, this
+ * instead assumes old is the root and swaps it out accordingly.
  * 
- * @requires old is the root if P is NULL, or else old is a non-NULL child of P
+ * @requires Either old is a non-NULL child of parent, or is the root of the
+ * tree if parent is NULL
  */
 void swap_child(struct tree *T, struct node *parent, struct node *old, struct node *new) {
-  if (old == NULL) printf("Can't swap out empty node\n");
+  assert(old != NULL);
   new->parent = parent;
 
   if (parent == NULL) {
-    if (T->root != old) printf("Can't swap out a non-root node at the root\n");
+    assert(T->root == old);
     T->root = new;
   }
   else if (parent->left == old) parent->left = new;
   else if (parent->right == old) parent->right = new;
-  else printf("Failed to find %d as a child of %d\n", old->value, parent->value);
+  else assert(0); // old is not a child of parent
 }
 
 // Tree rotations
@@ -83,9 +87,9 @@ void swap_child(struct tree *T, struct node *parent, struct node *old, struct no
  *
  */
 void rotate_right(struct tree *T, struct node *y) {
-  if (y == NULL) printf("Cannot rotate around NULL\n");
+  assert(y != NULL); // Cannot rotate around an empty tree
   struct node *x = y->left;
-  if (x == NULL) printf("No left node found to replace the root\n");
+  assert(x != NULL); // x will replace y's position, so it cannot be NULL
   
   struct node *z = y->parent;
   struct node *A = x->left;
@@ -111,9 +115,9 @@ void rotate_right(struct tree *T, struct node *y) {
  *
  */
 void rotate_left(struct tree *T, struct node *x) {
-  if (x == NULL) printf("Cannot rotate around NULL\n");
+  assert(x != NULL); // Cannot rotate around an empty tree
   struct node *y = x->right;
-  if (y == NULL) printf("No right node found to replace the root\n");
+  assert(y != NULL); // y will replace x's position, so it cannot be NULL
   
   struct node *z = x->parent;
   struct node *A = x->left;
@@ -128,15 +132,14 @@ void rotate_left(struct tree *T, struct node *x) {
 }
 
 // Splay implementation
-
 /**
- * Performs a single splay step on x.
+ * Performs a single splay step on x in the tree T.
  * 
- * @requires x cannot be NULL
+ * @requires T and x cannot be NULL
  */
 void splay_step(struct tree *T, struct node *x) {
-  if (T == NULL) printf("Tree not found\n");
-  if (x == NULL) printf("Can't splay NULL\n");
+  assert(T != NULL);
+  assert(x != NULL);
 
   struct node *y = x->parent;
   if (y == NULL) return; // root case, do nothing
@@ -209,18 +212,18 @@ void splay_step(struct tree *T, struct node *x) {
     rotate_left(T, y);
   }
   else {
-    printf("Invalid tree\n");
+    assert(0); // Invalid tree
   }
 }
 
 /**
  * Splays node x to the top of tre T.
  * 
- * @requires x cannot be NULL and must be in the tree
+ * @requires x cannot be NULL and must be in the non-NULL tree T
  */
 void splay_node(struct tree *T, struct node *x) {
-  if (T == NULL) printf("No tree found\n");
-  if (x == NULL) printf("Can't splay NULL\n");
+  assert(T != NULL);
+  assert(x != NULL);
   while (T->root != x) {
     splay_step(T, x);
   }
@@ -234,10 +237,8 @@ void splay_node(struct tree *T, struct node *x) {
  *    /
  *   1
  *
- * @requires n is nonnegative
  */
-struct tree* initialize_tree(int n) {
-  if (n < 0) printf("Invalid size\n");
+struct tree* initialize_tree(unsigned int n) {
   if (n == 0) return NULL;
   struct tree *T = calloc(1, sizeof(struct tree));
   T->size = n;
@@ -256,19 +257,25 @@ struct tree* initialize_tree(int n) {
   return T;
 }
 
+// Frees the tree structure.
+void free_tree(struct tree *T) {
+  free(T->root - T->root->value + 1);
+  free(T);
+}
+
 /**
  * Splays the node in tree T with value k to the top.
  * 
  * @requires T is a standard initialized tree, i.e. it has
  * nodes numbered from 1 to n, where n is the size.
+ * @requires k is a valid node between 1 and the size, inclusive.
+ * @ensures The node with value k is the root of the tree.
  */
 void splay(struct tree *T, int k) {
-  if (T == NULL) printf("Tree cannot be NULL\n");
-  if (k <= 0 || k > T->size) printf("Invalid node request\n");
-  splay_node(T, T->root + (k - T->root->value));
-  if (T->root->value != k) {
-    printf("Splay failed\n");
-  }
+  assert(T != NULL);
+  assert(1 <= k && k <= T->size);
+  splay_node(T, T->root - T->root->value + k);
+  assert(T->root->value == k);
 }
 
 int main() {
@@ -278,6 +285,8 @@ int main() {
   splay(T, 10);
   splay(T, 4);
   splay(T, 7);
+
+  free_tree(T);
 
   printf("Splay tests passed\n");
 
