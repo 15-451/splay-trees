@@ -1,5 +1,5 @@
 '''
-    splay_tree.py
+    splay_tree_starter.py
 
     This file implements a bottom-up splay tree, a self-balancing binary search
     tree. You can find more information about the data structure and its
@@ -11,7 +11,7 @@
     Mellon University.
 
     Contact: Kunal Joshi <kunalj@andrew.cmu.edu>
-    Last updated: 2022-08-28
+    Last updated: 2022-08-29
 '''
 
 ###############################################################################
@@ -51,7 +51,7 @@ class SplayTree:
 
     @requires :: `parent` cannot be None
     '''
-    def _set_left(self, parent : Node, left : Node):
+    def _set_left(self, parent : Node, left : Node) -> None:
         # check precondition
         assert parent != None, "Cannot set the left child of an empty tree"
 
@@ -65,7 +65,7 @@ class SplayTree:
 
     @requires :: `parent` cannot be None
     '''
-    def _set_right(self, parent : Node, right : Node):
+    def _set_right(self, parent : Node, right : Node) -> None:
         # check precondition
         assert parent != None, "Cannot set the right child of an empty tree"
 
@@ -80,7 +80,7 @@ class SplayTree:
                     AND `new` cannot be None
                     AND if `parent` is not None, `old` is a child of `parent`
     '''
-    def _swap_child(self, parent : Node, old : Node, new : Node):
+    def _swap_child(self, parent : Node, old : Node, new : Node) -> None:
         # check preconditions
         assert old != None, "Cannot swap for an empty old child"
         assert new != None, "Cannot swap for an empty new child"
@@ -106,7 +106,7 @@ class SplayTree:
 
     @requires :: `x` cannot be None AND `x` must have a non-None right child
     '''
-    def _rotate_left(self, x : Node):
+    def _rotate_left(self, x : Node) -> None:
         # check preconditions
         assert x != None, "Cannot rotate an empty tree"
         assert x.right != None, "Cannot rotate left with no right child"
@@ -138,7 +138,7 @@ class SplayTree:
 
     @requires :: `y` cannot be None AND `y` must have a non-None left child
     '''
-    def _rotate_right(self, y : Node):
+    def _rotate_right(self, y : Node) -> None:
         # check preconditions
         assert y != None, "Cannot rotate an empty tree"
         assert y.left != None, "Cannot rotate left with no left child"
@@ -152,8 +152,8 @@ class SplayTree:
 
         # perform rotation by swapping subtrees
         self._swap_child(z, y, x)
-        self._set_right(x, y)
         self._set_left(x, A)
+        self._set_right(x, y)
         self._set_left(y, B)
         self._set_right(y, C)
 
@@ -171,7 +171,7 @@ class SplayTree:
 
     @requires :: `x` must be non-None.
     '''
-    def _splaystep(self, x : Node):
+    def _splaystep(self, x : Node) -> None:
         # check precondition
         assert x != None, "Cannot run a splay step on an empty tree"
 
@@ -247,7 +247,7 @@ class SplayTree:
 
     @requires :: xnode is not None
     '''
-    def _splaynode(self, xnode : Node):
+    def _splaynode(self, xnode : Node) -> None:
         # check precondition
         assert xnode != None, "Cannot splay an empty tree"
 
@@ -265,7 +265,7 @@ class SplayTree:
 
     @requires :: `x` must correspond to a node in the tree
     '''
-    def _splay(self, x : int):
+    def _splay(self, x : int) -> None:
         # check preconditions
         assert x >= 1 and x <= self.n, "Value must correspond to a node in tree"
 
@@ -286,8 +286,12 @@ class SplayTree:
                              /
                             1
     ...where the leaf has value 1 and the root has value `n.`
+
+    @requires :: n >= 0
     '''
     def __init__(self, n : int):
+        # check precondition
+        assert n >= 0, "Cannot create a splay tree with negative nodes"
 
         prev = None # previous node
         nodes = [] # list of nodes in tree
