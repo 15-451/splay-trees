@@ -211,9 +211,7 @@ void splay_step(struct tree *T, struct node *x) {
     rotate_left(T, z);
     rotate_left(T, y);
   }
-  else {
-    assert(0); // Invalid tree
-  }
+  else assert(0); // Invalid tree
 }
 
 /**
@@ -287,6 +285,7 @@ void splay(struct tree *T, int k) {
 int main() {
 
   struct tree *T = initialize_tree(10);
+  
   splay(T, 1);
   splay(T, 10);
   splay(T, 4);
