@@ -53,13 +53,12 @@ class SplayTree {
  protected:
   struct Node {
     unsigned int value;
-    unsigned int size;
     Node* parent{nullptr};
     Node* left{nullptr};
     Node* right{nullptr};
     
     // Create a node with the given value as its key
-    Node(unsigned int value_) : value(value_), size(1) { }
+    Node(unsigned int value_) : value(value_) { }
     
     // Set the left child of the node to the given node
     void set_left(Node* node) {
